@@ -1,0 +1,22 @@
+name: edupro_e_learning_app_community_3968448878
+description: iNav Technologies — Loan & Payment Management
+publish_to: none
+version: 1.0.0+1
+environment:
+  sdk: ">=3.3.3 <4.0.0"
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+  http: ^1.2.0
+  edupro_e_learning_app_community_3968448878_f2f:
+    git: https://f2f.bostonux.com/packages/edupro_e_learning_app_community_3968448878_f2f
+  go_router: ^17.1.0
+  shared_preferences: ^2.5.4
+  intl: ^0.18.1
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+flutter:
+  uses-material-design: true
