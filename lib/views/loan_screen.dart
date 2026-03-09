@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:edupro_e_learning_app_community_3968448878/views/all_loan_offers.dart';
-import 'package:edupro_e_learning_app_community_3968448878/services/api_service.dart';
-import 'package:edupro_e_learning_app_community_3968448878/models/customer_model.dart';
 import '../theme/inav_theme.dart';
 
 class LoanDetailsScreen extends StatefulWidget {
@@ -17,14 +15,10 @@ class LoanDetailsScreen extends StatefulWidget {
 }
 
 class _LoanDetailsScreenState extends State<LoanDetailsScreen> {
-  static const _blue = Color(0xFF1D4ED8);
-
   // Height of the floating bottom nav bar
   static const double _navBarH = 82.0;
 
   bool _isPaying = false;
-  bool _isLoading = true;
-  Customer? _customerData;
 
   // Use loan passed via extras; fall back to first loan in list
   LoanModel get _loan => widget.loan ?? allLoans.first;
@@ -32,59 +26,17 @@ class _LoanDetailsScreenState extends State<LoanDetailsScreen> {
   @override
   void initState() {
     super.initState();
-    _fetchLoanDetails();
-  }
-
-  Future<void> _fetchLoanDetails() async {
-    try {
-      final customers = await ApiService.fetchCustomers();
-      if (customers.isNotEmpty) {
-        setState(() => _customerData = customers.first);
-      }
-    } catch (e) {
-      debugPrint('Error: $e');
-    } finally {
-      if (mounted) setState(() => _isLoading = false);
-    }
   }
 
   @override
   Widget build(BuildContext context) {
     final col = AdaptiveColors.of(context);
-    if (_isLoading) {
-      return Scaffold(
-        backgroundColor: col.bg,
-        body:
-            Center(child: CircularProgressIndicator(color: INavColors.accent)),
-      );
-    }
 
     final mq = MediaQuery.of(context);
     final bottomInset = mq.padding.bottom;
 
-    // Merge real data into active model if available
+    // Use passed data model
     LoanModel loan = _loan;
-    final c = _customerData;
-    if (c != null) {
-      final totalAmount = c.emiDue * c.tenure;
-      // Provide a simplistic conversion from Customer -> LoanModel for demo purposes
-      loan = LoanModel(
-        id: c.accountNumber,
-        type: "Personal Loan",
-        accountNumber:
-            "**** ${c.accountNumber.substring(c.accountNumber.length > 4 ? c.accountNumber.length - 4 : 0)}",
-        totalAmount: totalAmount,
-        remainingAmount: totalAmount - c.totalPaid,
-        emiAmount: c.emiDue,
-        tenureMonths: c.tenure,
-        paidEmis: c.paidEmis,
-        interestRate: c.interestRate,
-        nextDueDate: "Oct 15, 2023",
-        status: LoanStatus.active,
-        icon: Icons.account_balance_wallet_rounded,
-        accentColor: _blue,
-      );
-    }
 
     final si = _statusInfo(loan.status);
 

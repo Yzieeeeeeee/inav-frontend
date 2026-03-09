@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import '../models/payment_model.dart';
 import '../services/api_service.dart';
 
@@ -40,11 +41,15 @@ class _PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
             itemCount: payments.length,
             itemBuilder: (context, index) {
               final p = payments[index];
+              final dateStr = DateFormat('MMM dd, yyyy · hh:mm a')
+                  .format(DateTime.parse(p.paymentDate).toLocal());
               return ListTile(
                 leading: const Icon(Icons.payment, color: Colors.green),
-                title: Text('Amount: \$${p.paymentAmount}'),
-                subtitle: Text('Date: ${p.paymentDate}'),
-                trailing: Text(p.status, style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.green)),
+                title: Text('Amount: \$${p.paymentAmount} (ID: TXN_${p.id})'),
+                subtitle: Text('Date: $dateStr'),
+                trailing: Text(p.status,
+                    style: const TextStyle(
+                        fontWeight: FontWeight.bold, color: Colors.green)),
               );
             },
           );

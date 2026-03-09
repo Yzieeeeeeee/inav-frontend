@@ -430,7 +430,7 @@ class _ProfileScreenState extends State<ProfileScreen>
           ElevatedButton(
             onPressed: () {
               Navigator.pop(context);
-              context.go('/');
+              context.go('/login');
             },
             style: ElevatedButton.styleFrom(
                 backgroundColor: INavColors.error,

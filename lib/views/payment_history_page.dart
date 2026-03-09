@@ -66,7 +66,7 @@ class _PaymentHistoryScreenState extends State<PaymentHistoryScreen>
           status: status,
           rawDate: p.paymentDate,
           date: DateFormat('MMM dd, yyyy · hh:mm a')
-              .format(DateTime.parse(p.paymentDate)),
+              .format(DateTime.parse(p.paymentDate).toLocal()),
           amount: '\$${p.paymentAmount.toStringAsFixed(2)}',
           transactionId: 'TXN_${p.id}',
         );
@@ -149,12 +149,13 @@ class _PaymentHistoryScreenState extends State<PaymentHistoryScreen>
                 border: Border.all(color: Colors.white.withOpacity(0.12)),
               ),
               child: TextField(
-                style: TextStyle(fontFamily: 'Inter', color: Colors.white, fontSize: 14),
+                style: TextStyle(
+                    fontFamily: 'Inter', color: Colors.white, fontSize: 14),
                 onChanged: (v) => setState(() => _search = v),
                 decoration: InputDecoration(
                   hintText: 'Search transactions...',
-                  hintStyle:
-                      TextStyle(fontFamily: 'Inter', color: Colors.white38, fontSize: 14),
+                  hintStyle: TextStyle(
+                      fontFamily: 'Inter', color: Colors.white38, fontSize: 14),
                   prefixIcon: const Icon(Icons.search_rounded,
                       color: Colors.white38, size: 20),
                   border: InputBorder.none,
@@ -251,7 +252,8 @@ class _Tab extends StatelessWidget {
           ),
           child: Text(
             '$label ($count)',
-            style: TextStyle(fontFamily: 'Inter', 
+            style: TextStyle(
+              fontFamily: 'Inter',
               color: selected ? Colors.white : Colors.white54,
               fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
               fontSize: 13,
