@@ -1,4 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-permission android:name="android.permission.INTERNET"/>
     <application
         android:label="edupro_e_learning_app_community_3968448878"
         android:name="${applicationName}"

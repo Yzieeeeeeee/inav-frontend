@@ -8,6 +8,7 @@ import 'package:edupro_e_learning_app_community_3968448878/views/onboarding_page
 import 'package:edupro_e_learning_app_community_3968448878/views/payment_history_page.dart';
 import 'package:edupro_e_learning_app_community_3968448878/views/payment_success_page.dart';
 import 'package:edupro_e_learning_app_community_3968448878/views/profile_page.dart';
+import 'package:edupro_e_learning_app_community_3968448878/views/emi_schedule_page.dart';
 
 import '../authentication/login.dart';
 import '../views/bottom_navigation.dart';
@@ -45,6 +46,14 @@ final GoRouter appRouter = GoRouter(
       builder: (context, state) {
         final loan = state.extra is LoanModel ? state.extra as LoanModel : null;
         return EmiPaymentScreen(loan: loan);
+      },
+    ),
+    GoRoute(
+      path: "/emi-schedule",
+      builder: (context, state) {
+        final loan = state.extra is LoanModel ? state.extra as LoanModel : null;
+        // fallback to empty or non-nullable if structured that way.
+        return EmiSchedulePage(loan: loan!);
       },
     ),
     GoRoute(

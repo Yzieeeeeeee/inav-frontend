@@ -704,6 +704,11 @@ class _ProfileScreenState extends State<ProfileScreen>
                         trailing: Switch.adaptive(
                           value: provider.isDark,
                           activeColor: INavColors.accent,
+                          activeTrackColor: INavColors.accent.withOpacity(0.4),
+                          inactiveTrackColor:
+                              isDark ? Colors.white24 : Colors.black12,
+                          inactiveThumbColor:
+                              isDark ? Colors.white70 : Colors.white,
                           onChanged: (_) => provider.toggle(),
                         ),
                       ),

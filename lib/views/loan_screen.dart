@@ -397,7 +397,7 @@ class _LoanDetailsScreenState extends State<LoanDetailsScreen> {
                   fontWeight: FontWeight.bold,
                   color: AdaptiveColors.of(context).text)),
           TextButton(
-            onPressed: () {},
+            onPressed: () => context.push('/emi-schedule', extra: loan),
             child: const Text('View All',
                 style: TextStyle(
                     color: INavColors.accent, fontWeight: FontWeight.w600)),

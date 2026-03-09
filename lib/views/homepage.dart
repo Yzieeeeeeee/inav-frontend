@@ -677,7 +677,7 @@ class _RecentPaymentRow extends StatelessWidget {
               style: INavText.title(color: AdaptiveColors.of(context).text)),
           const SizedBox(height: 2),
           Text(
-            DateFormat('MMM dd, yyyy')
+            DateFormat('MMM dd, yyyy · hh:mm a')
                 .format(DateTime.parse(payment.paymentDate).toLocal()),
             style: INavText.caption(color: AdaptiveColors.of(context).muted),
           ),

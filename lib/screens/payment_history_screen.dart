@@ -43,13 +43,18 @@ class _PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
               final p = payments[index];
               final dateStr = DateFormat('MMM dd, yyyy · hh:mm a')
                   .format(DateTime.parse(p.paymentDate).toLocal());
+              final isSuccess = p.status.toUpperCase() == 'SUCCESS';
+
               return ListTile(
-                leading: const Icon(Icons.payment, color: Colors.green),
+                leading: Icon(
+                    isSuccess ? Icons.payment : Icons.pending_actions_rounded,
+                    color: isSuccess ? Colors.green : Colors.orange),
                 title: Text('Amount: \$${p.paymentAmount} (ID: TXN_${p.id})'),
                 subtitle: Text('Date: $dateStr'),
                 trailing: Text(p.status,
-                    style: const TextStyle(
-                        fontWeight: FontWeight.bold, color: Colors.green)),
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: isSuccess ? Colors.green : Colors.orange)),
               );
             },
           );

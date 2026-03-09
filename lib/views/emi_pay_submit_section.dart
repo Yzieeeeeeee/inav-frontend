@@ -60,9 +60,13 @@ class _EmiPaymentScreenState extends State<EmiPaymentScreen> {
   void initState() {
     super.initState();
     _selectedAccount = _accounts.first;
-    // Pre-fill the amount from the loan's real EMI value
+    // Limit payment to the lesser of EMI due or Total Remaining
+    double paymentDue = _loan.emiAmount;
+    if (_loan.remainingAmount < paymentDue) {
+      paymentDue = _loan.remainingAmount;
+    }
     _amountCtrl = TextEditingController(
-      text: _loan.emiAmount > 0 ? _loan.emiAmount.toStringAsFixed(2) : '0.00',
+      text: paymentDue > 0 ? paymentDue.toStringAsFixed(2) : '0.00',
     );
   }
 
@@ -74,10 +78,35 @@ class _EmiPaymentScreenState extends State<EmiPaymentScreen> {
 
   Future<void> _submit() async {
     if (_isSubmitting) return;
+
+    final amount = double.tryParse(_amountCtrl.text) ?? 0.0;
+    double maxPayable = _loan.emiAmount;
+    if (_loan.remainingAmount < maxPayable) {
+      maxPayable = _loan.remainingAmount;
+    }
+
+    if (amount <= 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+            content: Text('Please enter a valid amount > 0.'),
+            backgroundColor: Colors.red),
+      );
+      return;
+    }
+    if (amount > maxPayable) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            content:
+                Text('Amount cannot exceed \$${maxPayable.toStringAsFixed(2)}'),
+            backgroundColor: Colors.red),
+      );
+      // Auto-correct the input
+      _amountCtrl.text = maxPayable.toStringAsFixed(2);
+      return;
+    }
+
     setState(() => _isSubmitting = true);
     try {
-      final amount = double.tryParse(_amountCtrl.text) ?? 0.0;
-
       // 1. Immediately create a PENDING record on the backend
       final paymentData =
           await ApiService.makePayment(_loan.id, amount, status: 'PENDING');
@@ -87,8 +116,11 @@ class _EmiPaymentScreenState extends State<EmiPaymentScreen> {
       // 2. Simulate processing time for realistic UI feedback
       await Future.delayed(const Duration(seconds: 2));
 
-      // 3. Update status to SUCCESS since we haven't been interrupted
-      await ApiService.updatePaymentStatus(paymentId, 'SUCCESS');
+      // 3. If it's a full payment against the max limit, mark it SUCCESS.
+      // Otherwise, the backend will retain the PENDING state for a partial payment.
+      if (amount == maxPayable) {
+        await ApiService.updatePaymentStatus(paymentId, 'SUCCESS');
+      }
 
       if (mounted) {
         context.go('/payment-success', extra: {
@@ -294,7 +326,9 @@ class _EmiPaymentScreenState extends State<EmiPaymentScreen> {
                   ),
                 ),
                 GestureDetector(
-                  onTap: _isSubmitting ? null : _submit,
+                  onTap: (_isSubmitting || loan.remainingAmount <= 0)
+                      ? null
+                      : _submit,
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 300),
                     height: 54,
@@ -331,25 +365,30 @@ class _EmiPaymentScreenState extends State<EmiPaymentScreen> {
                           : Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                const Text(
-                                  'Submit Payment',
-                                  style: TextStyle(
+                                Text(
+                                  loan.remainingAmount <= 0
+                                      ? 'Loan Completed'
+                                      : 'Submit Payment',
+                                  style: const TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold,
                                       color: Colors.white,
                                       letterSpacing: 0.2),
                                 ),
                                 const SizedBox(width: 10),
-                                Container(
-                                  width: 26,
-                                  height: 26,
-                                  decoration: BoxDecoration(
-                                    color: Colors.white.withOpacity(0.2),
-                                    shape: BoxShape.circle,
+                                if (loan.remainingAmount > 0)
+                                  Container(
+                                    width: 26,
+                                    height: 26,
+                                    decoration: BoxDecoration(
+                                      color: Colors.white.withOpacity(0.2),
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: const Icon(
+                                        Icons.arrow_forward_rounded,
+                                        color: Colors.white,
+                                        size: 14),
                                   ),
-                                  child: const Icon(Icons.arrow_forward_rounded,
-                                      color: Colors.white, size: 14),
-                                ),
                               ],
                             ),
                     ),
