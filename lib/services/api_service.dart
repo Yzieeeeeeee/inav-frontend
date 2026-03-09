@@ -5,7 +5,7 @@ import '../models/payment_model.dart';
 
 class ApiService {
   // Use 10.0.2.2 for Android Emulator, localhost for iOS simulator, or local IP for physical device.
-  static const String baseUrl = 'http://localhost:3000';
+  static const String baseUrl = 'http://13.211.214.44';
 
   static Future<List<Customer>> fetchCustomers() async {
     final response = await http.get(Uri.parse('$baseUrl/customers'));
