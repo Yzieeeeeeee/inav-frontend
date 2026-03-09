@@ -8,9 +8,16 @@ class PaymentSuccessPage extends StatefulWidget {
   /// Falls back to safe defaults when accessed directly.
   final LoanModel? loan;
   final String? accountName;
+  final double? paidAmount;
+  final bool? isPartial;
 
-  const PaymentSuccessPage({Key? key, this.loan, this.accountName})
-      : super(key: key);
+  const PaymentSuccessPage({
+    Key? key,
+    this.loan,
+    this.accountName,
+    this.paidAmount,
+    this.isPartial,
+  }) : super(key: key);
 
   @override
   State<PaymentSuccessPage> createState() => _PaymentSuccessPageState();
@@ -205,7 +212,8 @@ class _PaymentSuccessPageState extends State<PaymentSuccessPage>
                         child: _TxnCard(
                           txnId: _txnId,
                           dateTime: _dateTime,
-                          emiAmount: loan?.emiAmount ?? 788.50,
+                          emiAmount:
+                              widget.paidAmount ?? (loan?.emiAmount ?? 788.50),
                           loanId: loan?.id ?? 'L001',
                           loanType: loan?.type ?? 'Personal Loan',
                           accountName: widget.accountName,
@@ -240,7 +248,7 @@ class _PaymentSuccessPageState extends State<PaymentSuccessPage>
                                         fontWeight: FontWeight.w500)),
                                 const SizedBox(height: 2),
                                 Text(
-                                  '\$${_fmtFull(loan.remainingAmount - loan.emiAmount)}',
+                                  '\$${_fmtFull(loan.remainingAmount - (widget.paidAmount ?? loan.emiAmount))}',
                                   style: TextStyle(
                                       color: col.text,
                                       fontSize: 18,
@@ -286,9 +294,16 @@ class _PaymentSuccessPageState extends State<PaymentSuccessPage>
                 ],
               ),
               child: Column(mainAxisSize: MainAxisSize.min, children: [
-                // Back to Dashboard
+                // Action Navigation Logic
                 GestureDetector(
-                  onTap: () => context.go('/navig'),
+                  onTap: () {
+                    if (widget.isPartial == true && loan != null) {
+                      context.push('/payment-history',
+                          extra: loan.accountNumber);
+                    } else {
+                      context.go('/navig');
+                    }
+                  },
                   child: Container(
                     height: 54,
                     decoration: BoxDecoration(
@@ -306,16 +321,22 @@ class _PaymentSuccessPageState extends State<PaymentSuccessPage>
                         ),
                       ],
                     ),
-                    child: const Center(
+                    child: Center(
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(Icons.home_rounded,
-                              color: Colors.white, size: 20),
-                          SizedBox(width: 8),
+                          Icon(
+                              widget.isPartial == true
+                                  ? Icons.history_rounded
+                                  : Icons.home_rounded,
+                              color: Colors.white,
+                              size: 20),
+                          const SizedBox(width: 8),
                           Text(
-                            'Back to Dashboard',
-                            style: TextStyle(
+                            widget.isPartial == true
+                                ? 'View Payment History'
+                                : 'Back to Dashboard',
+                            style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
                                 color: Colors.white),

@@ -63,7 +63,14 @@ final GoRouter appRouter = GoRouter(
           final extra = s.extra as Map<String, dynamic>;
           final loan = extra['loan'] as LoanModel?;
           final accountName = extra['accountName'] as String?;
-          return PaymentSuccessPage(loan: loan, accountName: accountName);
+          final paidAmount = extra['paidAmount'] as double?;
+          final isPartial = extra['isPartial'] as bool?;
+          return PaymentSuccessPage(
+            loan: loan,
+            accountName: accountName,
+            paidAmount: paidAmount,
+            isPartial: isPartial,
+          );
         }
         final loan = s.extra is LoanModel ? s.extra as LoanModel : null;
         return PaymentSuccessPage(loan: loan);

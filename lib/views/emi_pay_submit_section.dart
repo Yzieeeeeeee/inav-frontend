@@ -146,6 +146,8 @@ class _EmiPaymentScreenState extends State<EmiPaymentScreen> {
         context.go('/payment-success', extra: {
           'loan': _loan,
           'accountName': _selectedAccount,
+          'paidAmount': amount,
+          'isPartial': amount < maxPayable,
         });
       }
     } catch (e) {
