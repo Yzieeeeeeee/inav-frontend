@@ -62,7 +62,18 @@ class _EmiPaymentScreenState extends State<EmiPaymentScreen> {
     _selectedAccount = _accounts.first;
     // Limit payment to the lesser of EMI due or Total Remaining
     double paymentDue = _loan.emiAmount;
-    if (_loan.remainingAmount < paymentDue) {
+
+    // Calculate if there are any strictly pending partial EMIs
+    final totalPaidSoFar = _loan.totalAmount - _loan.remainingAmount;
+    final expectedFullEmisPaid =
+        _loan.emiAmount > 0 ? (totalPaidSoFar / _loan.emiAmount).floor() : 0;
+    final partialPaid =
+        totalPaidSoFar - (expectedFullEmisPaid * _loan.emiAmount);
+
+    if (partialPaid > 0) {
+      // Force user to clear the pending EMI first
+      paymentDue = _loan.emiAmount - partialPaid;
+    } else if (_loan.remainingAmount < paymentDue) {
       paymentDue = _loan.remainingAmount;
     }
     _amountCtrl = TextEditingController(
@@ -81,7 +92,16 @@ class _EmiPaymentScreenState extends State<EmiPaymentScreen> {
 
     final amount = double.tryParse(_amountCtrl.text) ?? 0.0;
     double maxPayable = _loan.emiAmount;
-    if (_loan.remainingAmount < maxPayable) {
+
+    final totalPaidSoFar = _loan.totalAmount - _loan.remainingAmount;
+    final expectedFullEmisPaid =
+        _loan.emiAmount > 0 ? (totalPaidSoFar / _loan.emiAmount).floor() : 0;
+    final partialPaid =
+        totalPaidSoFar - (expectedFullEmisPaid * _loan.emiAmount);
+
+    if (partialPaid > 0) {
+      maxPayable = _loan.emiAmount - partialPaid;
+    } else if (_loan.remainingAmount < maxPayable) {
       maxPayable = _loan.remainingAmount;
     }
 
