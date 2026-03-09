@@ -14,10 +14,14 @@ class Payment {
   });
 
   factory Payment.fromJson(Map<String, dynamic> json) {
+    String pDate = json['payment_date'].toString();
+    if (!pDate.endsWith('Z')) {
+      pDate += 'Z';
+    }
     return Payment(
       id: json['id'],
       customerId: json['customer_id'],
-      paymentDate: json['payment_date'],
+      paymentDate: pDate,
       paymentAmount: double.parse(json['payment_amount'].toString()),
       status: json['status'],
     );
